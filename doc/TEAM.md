@@ -17,12 +17,12 @@ Thêm/xóa rows để khớp nhóm thật; mẫu ba rows không ép nhóm phải
 
 | STT | Họ và tên | MSSV | Vai trò / công việc thật | Bằng chứng |
 |---|---|---|---|---|
-| 1 | Nguyễn Hải Long | 2A202602471 | Trưởng nhóm; tích hợp m1–m5, môi trường, tạo 50 answers, hợp nhất các phase và điều phối chạy lại Phase C | commits 8c796e5, 7dc08e5; artifacts/answers_50q.json, artifacts/guard_results.json |
+| 1 | Nguyễn Hải Long | 2A202602471 | Trưởng nhóm; tích hợp m1–m5, môi trường, tạo 50 answers, hợp nhất các phase và điều phối lượt chạy lại A/B/C | commits 8c796e5, 7dc08e5; artifacts/answers_50q.json và ba artifacts phase |
 | 2 | Ngô Tiến Dũng | 2A202602374 | Phase A: RAGAS Eval (Tasks 1–4) và báo cáo failure clusters | commits 06fe153, 24450de; src/phase_a_ragas.py, artifacts/ragas_50q.json, doc/reports/failure_clusters.md |
 | 3 | Hoàng Anh Minh | 2A202602566 | Phase B: LLM-as-Judge (Tasks 5–8) và báo cáo bias | commit c9b4fd0, src/phase_b_judge.py, artifacts/judge_results.json, doc/reports/bias_report.md |
 | 4 | Hà Anh Tuấn | 2A202602376 | Phase C: Presidio/NeMo guardrails (Tasks 9a–12), thực nghiệm input/output/latency và blueprint | commit feb058f; src/phase_c_guard.py, artifacts/guard_results.json, doc/reports/blueprint.md |
 
-Người tích hợp/chạy batch/nộp link: Nguyễn Hải Long tích hợp các nhánh, điều phối chỉnh prompt và chạy lại Phase C sau khi merge, nộp link GitHub chung; Ngô Tiến Dũng chạy Phase A; Hoàng Anh Minh chạy Phase B; Hà Anh Tuấn triển khai và chạy Phase C ban đầu với Codex hỗ trợ.
+Người tích hợp/chạy batch/nộp link: Nguyễn Hải Long tích hợp các nhánh, điều phối chỉnh prompt và lượt chạy lại A/B/C trước khi nộp, gửi link GitHub chung; Ngô Tiến Dũng triển khai/chạy Phase A ban đầu; Hoàng Anh Minh triển khai/chạy Phase B ban đầu; Hà Anh Tuấn triển khai/chạy Phase C ban đầu với Codex hỗ trợ.
 
 ## Môi trường và chuẩn bị trước lớp
 
@@ -36,7 +36,7 @@ hoặc pip resolve để khẳng định runtime đã chạy.
 
 ### NguyenHaiLong-2A202602471
 
-- Phần được giao và phần thực tế đã làm: Trưởng nhóm; đưa năm module RAG Day18 vào repo, sửa tương thích Qdrant client và RAGAS metadata, cấu hình phiên bản PyArrow, tạo và kiểm tra 50 answers, tích hợp các nhánh. Sau khi merge Phase C, điều phối làm rõ prompt phân loại phạm vi HR/IT, chạy lại batch API và cập nhật bằng chứng bonus/latency.
+- Phần được giao và phần thực tế đã làm: Trưởng nhóm; đưa năm module RAG Day18 vào repo, sửa tương thích Qdrant client và RAGAS metadata, cấu hình phiên bản PyArrow, tạo và kiểm tra 50 answers, tích hợp các nhánh. Sau khi merge Phase C, điều phối làm rõ prompt phân loại phạm vi HR/IT, chạy lại A/B/C bằng API và cập nhật báo cáo theo artifacts mới.
 - Bằng chứng: commit `8c796e5` tích hợp module Day18 và answers; merge commit `7dc08e5` tích hợp Phase B; `src/m1_chunking.py` đến `src/m5_enrichment.py`, `artifacts/answers_50q.json`.
 - Cách kiểm tra: Chạy 60 support tests offline; kiểm tra 50 ids duy nhất, phân bố 20/20/10, không thiếu answer/contexts và đối chiếu với test set. Với Phase C cập nhật, chạy thử 5 câu ngoài phạm vi và 8 clean, sau đó chạy batch live đầy đủ: 20/20 attacks, 8/8 clean allowed, 4/4 output cases; kiểm tra `scripts/check_lab.py` và 86 test offline.
 - Điều đã học: Phân biệt unit tests với thực nghiệm live; kiểm tra tương thích dependency và giao diện giữa pipeline Day18 với bài eval Day24.
@@ -89,7 +89,7 @@ hoặc pip resolve để khẳng định runtime đã chạy.
 
 - Phần được giao và phần thực tế đã làm: Phụ trách Tasks 9a–12 theo luồng TODO: quét/ẩn PII bằng Presidio; input/output self-check bằng NeMo; chạy attacks/clean controls; đo latency; tổng hợp blueprint từ A/B/C. Bổ sung bộ lọc định danh có cấu trúc để tránh NER tiếng Anh chặn nhầm tiếng Việt và làm rõ prompt input HR/IT trong config.yml. Giữ nguyên imports/helpers; không thêm ngoại lệ theo fixtures.
 - Bằng chứng: commit `feb058f` trên nhánh `phase-c`; `src/phase_c_guard.py`, `guardrails/config.yml`, `artifacts/guard_results.json` và `doc/reports/blueprint.md`.
-- Cách kiểm tra: Bộ tests gốc của starter đạt 86 passed, 3 deselected, gồm 12 tests Phase C. Batch ban đầu của nhánh `phase-c`: 17/20 attacks, 8/8 clean allowed, 4/4 outputs đúng; 20 timed samples sau 2 warm-up, P95 input guard 833.754435ms. Bản chạy lại sau khi trưởng nhóm chỉnh prompt được ghi trong `artifacts/guard_results.json`: 20/20 attacks, 8/8 clean allowed, 4/4 outputs đúng, P95 input guard 977.879610ms; `latency_budget_ok=false`.
+- Cách kiểm tra: Bộ tests gốc của starter đạt 86 passed, 3 deselected, gồm 12 tests Phase C. Batch ban đầu của nhánh `phase-c`: 17/20 attacks, 8/8 clean allowed, 4/4 outputs đúng; 20 timed samples sau 2 warm-up, P95 input guard 833.754435ms. Bản chạy lại mới nhất trong `artifacts/guard_results.json`: 20/20 attacks, 8/8 clean allowed, 4/4 outputs đúng, P95 input guard 908.734215ms; `latency_budget_ok=false`.
 - Điều đã học: Quyết định guard phải dựa trên rail log, không dựa từ khóa từ chối; NER tiếng Anh gây false positives trên tiếng Việt; cần phân biệt chính sách mật khẩu chung với yêu cầu lấy mật khẩu thật. Latency input layers đo đủ hai tầng khác thời gian request dừng sớm và khác latency toàn hệ thống.
 - Giới hạn/cách xử lý: Presidio kiểm tra định danh có cấu trúc, NeMo xử lý yêu cầu dữ liệu cá nhân và phạm vi chủ đề; chưa bao phủ toàn bộ PII tiếng Việt. Ba ca ngoài phạm vi từng lọt trong batch ban đầu đã bị chặn sau khi chỉnh prompt; batch mới đạt điều kiện bonus, nhưng bộ 20/8/4 nhỏ và đã dùng để điều chỉnh, cần holdout trước production. P95 vượt mục tiêu 500ms được ghi đúng và phân tích trong blueprint.
 - Nguồn/AI hỗ trợ nếu có: Dùng Codex hỗ trợ hoàn thiện code theo starter, phân tích false positives, điều chỉnh bộ lọc PII và prompt input trong config.yml, chạy pytest/batch thật và soạn báo cáo từ JSON. Tests, fixtures và requirements giữ nguyên bản gốc. Các số liệu live lấy từ artifact thực nghiệm, không dùng mock làm kết quả nộp bài.

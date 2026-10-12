@@ -8,11 +8,11 @@ Người phụ trách: Hà Anh Tuấn (2A202602376).
 
 | Phase | Artifact | Run timestamp UTC | Model thực tế |
 |---|---|---|---|
-| A | ragas_50q.json | 2026-10-12T09:52:39.902165+00:00 | Evaluator: gpt-4o-mini, text-embedding-3-small |
-| B | judge_results.json | 2026-10-12T09:48:07.947355+00:00 | Judge: gemini-3.5-flash |
-| C | guard_results.json | 2026-10-12T13:06:26.573324+00:00 | Guard: gpt-4o-mini |
+| A | ragas_50q.json | 2026-10-12T13:15:07.235420+00:00 | Evaluator: gpt-4o-mini, text-embedding-3-small |
+| B | judge_results.json | 2026-10-12T13:15:39.039739+00:00 | Judge: gpt-4o-mini |
+| C | guard_results.json | 2026-10-12T13:16:55.717993+00:00 | Guard: gpt-4o-mini |
 
-Phase C được chạy lại lúc 20:06:26 ngày 12/10/2026 (UTC+07:00) sau khi làm rõ prompt phân loại phạm vi HR/IT. `answers_50q.json` có 50 answers dùng `extractive_fallback`, generation model null; không khai đó là câu trả lời được LLM sinh. A/B là kết quả do thành viên phụ trách cung cấp, không chạy lại trong lần cập nhật này.
+Ba phase được chạy lại lúc khoảng 20:15–20:16 ngày 12/10/2026 (UTC+07:00). `answers_50q.json` có 50 answers dùng `extractive_fallback`, generation model null; không khai đó là câu trả lời được LLM sinh.
 
 ## Kiến trúc và failure action
 
@@ -32,14 +32,14 @@ Task 12 có scope `input_layers_sequential`: engines tạo trước đo, hai war
 
 | Layer / scope | P50 ms | P95 ms | P99 ms | Tình trạng |
 |---|---:|---:|---:|---|
-| Presidio | 10.107150 | 14.627155 | 14.948711 | Đã đo |
-| NeMo input | 664.519600 | 970.716955 | 1061.685231 | Đã đo, điểm nghẽn |
-| Input guard sequential | 675.489500 | 977.879610 | 1074.802562 | Đã đo, vượt target |
+| Presidio | 12.241050 | 18.819885 | 52.253577 | Đã đo |
+| NeMo input | 731.360800 | 897.829770 | 943.227154 | Đã đo, điểm nghẽn |
+| Input guard sequential | 745.095950 | 908.734215 | 955.182603 | Đã đo, vượt target |
 | RAG | chưa đo | chưa đo | chưa đo | Ngoài phạm vi Task 12 |
 | NeMo output | chưa đo | chưa đo | chưa đo | Ngoài phạm vi Task 12 |
 | Full guard / request dừng sớm | chưa đo | chưa đo | chưa đo | Không suy từ input_guard_ms |
 
-Budget target: 500ms; `latency_budget_ok=false`. P95 tổng cao hơn target 477.879610ms. NeMo input gồm round-trip API và xử lý model; chưa có instrumentation tách hai phần. Không cộng P95 từng layer để suy P95 tổng. Theo rubric, vượt target vẫn phải ghi đúng và phân tích, không tự sửa số liệu.
+Budget target: 500ms; `latency_budget_ok=false`. P95 tổng cao hơn target 408.734215ms. NeMo input gồm round-trip API và xử lý model; chưa có instrumentation tách hai phần. Không cộng P95 từng layer để suy P95 tổng. Theo rubric, vượt target vẫn phải ghi đúng và phân tích, không tự sửa số liệu.
 
 ## CI gates đề xuất
 
@@ -51,7 +51,7 @@ Ngưỡng full-guard P95 <500ms chỉ áp dụng sau khi đo full request thật
 
 ## Monitoring và cải tiến
 
-RAGAS weighted means trên 50 câu: faithfulness 0.9910, answer relevancy 0.3765, context precision 0.9517, context recall 0.7883, avg_score 0.7769. Distribution avg_score: factual 0.7817, multi_hop 0.7797, adversarial 0.7614; adversarial yếu nhất. Worst metric của 48/50 câu là answer relevancy. Judge κ=1.0 trên 10 nhãn, position bias 0/5 và verbosity win rate 0.4 trên 5 cặp; mẫu nhỏ không chứng minh judge đáng tin trong mọi tình huống.
+RAGAS weighted means trên 50 câu: faithfulness 0.9910, answer relevancy 0.3737, context precision 0.9483, context recall 0.7917, avg_score 0.7762. Distribution avg_score: factual 0.7797, multi_hop 0.7762, adversarial 0.7692; adversarial yếu nhất. Worst metric của 48/50 câu là answer relevancy. Judge κ=1.0 trên 10 nhãn, position bias 2/5 và verbosity win rate 3/3 cặp có winner quyết định; mẫu nhỏ và reasoning pairwise bất ổn, cần người rà soát.
 
 - Bổ sung holdout tiếng Việt cho tên người, câu HR/IT hợp lệ và câu ngoài phạm vi; đo false positives/negatives trước khi đổi policy. Bộ 20/8/4 đã dùng để điều chỉnh nên kết quả hiện tại chỉ phản ánh bộ lab.
 - Đánh giá prompt phân loại phạm vi mới trên holdout tiếng Việt/Anh với chủ đề ngoài HR/IT và các câu chính sách hợp lệ, thay vì suy rộng 20/20 từ bộ lab. Thử topic classifier tiếng Việt hoặc model guard khác nếu holdout còn lỗi. Bổ sung NER tiếng Việt nếu cần phát hiện tên thật, thay vì tái dùng NER tiếng Anh để chặn input.
