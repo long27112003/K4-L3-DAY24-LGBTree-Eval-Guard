@@ -10,9 +10,9 @@ Người phụ trách: Hà Anh Tuấn (2A202602376).
 |---|---|---|---|
 | A | ragas_50q.json | 2026-10-12T09:52:39.902165+00:00 | Evaluator: gpt-4o-mini, text-embedding-3-small |
 | B | judge_results.json | 2026-10-12T09:48:07.947355+00:00 | Judge: gemini-3.5-flash |
-| C | guard_results.json | 2026-10-12T11:36:44.232309+00:00 | Guard: gpt-4o-mini |
+| C | guard_results.json | 2026-10-12T13:06:26.573324+00:00 | Guard: gpt-4o-mini |
 
-Phase C hoàn tất lúc 18:36:44 ngày 12/10/2026 (UTC+07:00). `answers_50q.json` có 50 answers dùng `extractive_fallback`, generation model null; không khai đó là câu trả lời được LLM sinh. A/B là kết quả do thành viên phụ trách cung cấp, được giữ nguyên trong lần tích hợp này.
+Phase C được chạy lại lúc 20:06:26 ngày 12/10/2026 (UTC+07:00) sau khi làm rõ prompt phân loại phạm vi HR/IT. `answers_50q.json` có 50 answers dùng `extractive_fallback`, generation model null; không khai đó là câu trả lời được LLM sinh. A/B là kết quả do thành viên phụ trách cung cấp, không chạy lại trong lần cập nhật này.
 
 ## Kiến trúc và failure action
 
@@ -26,20 +26,20 @@ Các hàm hiện tại truyền lỗi API/runtime lên, không chuyển lỗi th
 
 ## Phạm vi và số đo latency
 
-Phase C với bộ lọc PII và prompt input hiện tại: **17/20 attacks (85%)**, **8/8 clean allowed**, false-positive rate **0%**; **4/4 output cases đúng**. Đạt yêu cầu lab ≥15/20 kèm 8/8 clean allowed và output cases đúng; chưa đạt bonus ≥18/20. Attacks id 12 (nấu ăn), 14 (toán) và 15 (phim) còn allowed qua NeMo. Không sửa fixtures hoặc ngoại lệ theo id để che các lỗi này; cần kiểm chứng phạm vi chủ đề trên holdout trước production.
+Phase C với bộ lọc PII và prompt input hiện tại: **20/20 attacks (100%)**, **8/8 clean allowed**, false-positive rate **0%**; **4/4 output cases đúng**. Đạt yêu cầu lab ≥15/20 và điều kiện bonus ≥18/20 kèm 8/8 clean allowed. Ba ca ngoài phạm vi từng lọt (nấu ăn, toán, phim) đã bị NeMo chặn trong batch mới. Không sửa fixtures hoặc thêm ngoại lệ theo id; prompt nêu rõ chỉ cho phép yêu cầu chính sách HR/IT nội bộ. Bộ 20/8/4 đã dùng để điều chỉnh prompt, nên cần kiểm chứng trên holdout trước production.
 
 Task 12 có scope `input_layers_sequential`: engines tạo trước đo, hai warm-up thật mỗi tầng trong cùng event loop bị loại, sau đó **20 timed samples** luân phiên clean inputs. Luôn đo cả Presidio và NeMo, kể cả khi PII chặn; request thật dừng sớm không nằm trong phép đo này. Dùng `perf_counter`, raw milliseconds và percentile tuyến tính tại `(n-1)*q`; tổng tính từng sample trước khi tính percentile.
 
 | Layer / scope | P50 ms | P95 ms | P99 ms | Tình trạng |
 |---|---:|---:|---:|---|
-| Presidio | 17.455450 | 50.661685 | 53.082817 | Đã đo |
-| NeMo input | 674.660800 | 817.407230 | 1010.280486 | Đã đo, điểm nghẽn |
-| Input guard sequential | 692.536950 | 833.754435 | 1030.173927 | Đã đo, vượt target |
+| Presidio | 10.107150 | 14.627155 | 14.948711 | Đã đo |
+| NeMo input | 664.519600 | 970.716955 | 1061.685231 | Đã đo, điểm nghẽn |
+| Input guard sequential | 675.489500 | 977.879610 | 1074.802562 | Đã đo, vượt target |
 | RAG | chưa đo | chưa đo | chưa đo | Ngoài phạm vi Task 12 |
 | NeMo output | chưa đo | chưa đo | chưa đo | Ngoài phạm vi Task 12 |
 | Full guard / request dừng sớm | chưa đo | chưa đo | chưa đo | Không suy từ input_guard_ms |
 
-Budget target: 500ms; `latency_budget_ok=false`. P95 tổng cao hơn target 333.754435ms. NeMo input gồm round-trip API và xử lý model; chưa có instrumentation tách hai phần. Không cộng P95 từng layer để suy P95 tổng. Theo rubric, vượt target vẫn phải ghi đúng và phân tích, không tự sửa số liệu.
+Budget target: 500ms; `latency_budget_ok=false`. P95 tổng cao hơn target 477.879610ms. NeMo input gồm round-trip API và xử lý model; chưa có instrumentation tách hai phần. Không cộng P95 từng layer để suy P95 tổng. Theo rubric, vượt target vẫn phải ghi đúng và phân tích, không tự sửa số liệu.
 
 ## CI gates đề xuất
 
@@ -54,7 +54,7 @@ Ngưỡng full-guard P95 <500ms chỉ áp dụng sau khi đo full request thật
 RAGAS weighted means trên 50 câu: faithfulness 0.9910, answer relevancy 0.3765, context precision 0.9517, context recall 0.7883, avg_score 0.7769. Distribution avg_score: factual 0.7817, multi_hop 0.7797, adversarial 0.7614; adversarial yếu nhất. Worst metric của 48/50 câu là answer relevancy. Judge κ=1.0 trên 10 nhãn, position bias 0/5 và verbosity win rate 0.4 trên 5 cặp; mẫu nhỏ không chứng minh judge đáng tin trong mọi tình huống.
 
 - Bổ sung holdout tiếng Việt cho tên người, câu HR/IT hợp lệ và câu ngoài phạm vi; đo false positives/negatives trước khi đổi policy. Bộ 20/8/4 đã dùng để điều chỉnh nên kết quả hiện tại chỉ phản ánh bộ lab.
-- Thử topic classifier tiếng Việt hoặc model guard khác để giảm lỗi ngoài phạm vi ở ids 12/14/15; đánh giá trên holdout và giữ đủ clean controls. Bổ sung NER tiếng Việt nếu cần phát hiện tên thật, thay vì tái dùng NER tiếng Anh để chặn input.
+- Đánh giá prompt phân loại phạm vi mới trên holdout tiếng Việt/Anh với chủ đề ngoài HR/IT và các câu chính sách hợp lệ, thay vì suy rộng 20/20 từ bộ lab. Thử topic classifier tiếng Việt hoặc model guard khác nếu holdout còn lỗi. Bổ sung NER tiếng Việt nếu cần phát hiện tên thật, thay vì tái dùng NER tiếng Anh để chặn input.
 - Thử giảm prompt, tái sử dụng client và giới hạn timeout/retry để giảm latency API. Đo thêm token usage, lỗi và p95 với ít nhất 100 mẫu; cache theo model/policy version, không lưu raw PII.
 - Cải thiện generation từ extractive fallback sang câu trả lời có trích dẫn, kiểm tra multi-hop và metadata phiên bản; chạy lại Phase A để so answer relevancy/recall, không sửa ground truth.
 - Đo riêng RAG, output rail và full request bằng timestamps quanh từng tầng, tách request allowed/blocked, warm-up ít nhất hai lượt và lưu raw samples. Sau đó mới đánh giá full-guard budget.
