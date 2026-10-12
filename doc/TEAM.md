@@ -8,7 +8,7 @@ Trưởng nhóm/người nộp: Nguyễn Hải Long (2A202602471)
 
 Ngày lab/deadline áp dụng: 12/10/2026 23:59 — Asia/Ho_Chi_Minh (UTC+07:00)
 
-Commit dùng để chấm: Chưa chốt; xác nhận sau khi rà soát bản nộp cuối.
+Commit dùng để chấm: `85e73b1b8b7745408656412400e6461803913752` (bản mã, artifacts và reports đã kiểm tra).
 
 Mỗi nhóm nộp một repo. Điền đủ thành viên và một mục INDIVIDUAL cho từng người.
 Thêm/xóa rows để khớp nhóm thật; mẫu ba rows không ép nhóm phải có ba người.
@@ -96,4 +96,4 @@ hoặc pip resolve để khẳng định runtime đã chạy.
 
 ## Cập nhật sau khi nộp
 
-Đã tích hợp Phase C vào `main`; chưa nộp bản cuối. Xác nhận commit chấm sau khi rà soát bản nộp.
+Đã tích hợp Phase C vào `main`; chưa nộp bản cuối. Nếu sửa mã, artifacts hoặc reports trước khi nộp, cập nhật commit dùng để chấm theo bản mới.
