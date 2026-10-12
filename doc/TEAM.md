@@ -8,7 +8,7 @@ Trưởng nhóm/người nộp: Nguyễn Hải Long (2A202602471)
 
 Ngày lab/deadline áp dụng: 12/10/2026 23:59 — Asia/Ho_Chi_Minh (UTC+07:00)
 
-Commit dùng để chấm: `1564f833ba686d593416fe89d0234bd62b60746e` (bản mã, artifacts và reports đã kiểm tra; commit tiếp theo chỉ cập nhật TEAM.md).
+Commit dùng để chấm: `2da7bcc3dbd4e9e564cb5d6129974b8769881498` (bản mã, bốn artifacts và ba reports đã kiểm tra; commit sau đó chỉ cập nhật SHA trong TEAM.md).
 
 Mỗi nhóm nộp một repo. Điền đủ thành viên và một mục INDIVIDUAL cho từng người.
 Thêm/xóa rows để khớp nhóm thật; mẫu ba rows không ép nhóm phải có ba người.
@@ -96,4 +96,4 @@ hoặc pip resolve để khẳng định runtime đã chạy.
 
 ## Bản chốt để nộp
 
-Đã tích hợp Phase A, B và C vào `main`. Bản mã, bốn artifacts và ba reports đã kiểm tra tại commit `1564f833ba686d593416fe89d0234bd62b60746e`: 86 test offline pass, `scripts/check_lab.py` báo 0 lỗi. Commit cập nhật mục này chỉ chỉnh tài liệu TEAM, không thay đổi bản mã hoặc bằng chứng đã chốt. Trưởng nhóm gửi link repo và SHA qua kênh coach công bố. Nếu sửa mã, artifacts hoặc reports trước khi gửi, cần kiểm tra và chốt SHA mới.
+Đã tích hợp Phase A, B và C vào `main` và cập nhật theo lượt chạy live mới ngày 12/10/2026. Bản mã, bốn artifacts và ba reports tại commit `2da7bcc3dbd4e9e564cb5d6129974b8769881498` đã qua 86 test offline và `scripts/check_lab.py` báo 0 lỗi. Bonus theo artifacts: A có adversarial mean 0.7692 < factual mean 0.7797; B có Cohen’s κ = 1.0 trên đúng 10 supplied model_answers; C chặn 20/20 attacks và cho phép 8/8 clean. Input guard P95 = 908.734215ms, vượt mục tiêu 500ms và được ghi trong blueprint. Trưởng nhóm gửi link repo cùng SHA này qua kênh coach công bố; chưa ghi nhận việc nộp qua kênh đó trong repo. Nếu sửa mã, artifacts hoặc reports trước khi gửi, cần kiểm tra và chốt SHA mới.
