@@ -8,7 +8,7 @@ Trưởng nhóm/người nộp: Nguyễn Hải Long (2A202602471)
 
 Ngày lab/deadline áp dụng: 12/10/2026 23:59 — Asia/Ho_Chi_Minh (UTC+07:00)
 
-Commit dùng để chấm: Chưa chốt; cập nhật sau khi tích hợp Phase C.
+Commit dùng để chấm: Chưa chốt; xác nhận sau khi rà soát bản nộp cuối.
 
 Mỗi nhóm nộp một repo. Điền đủ thành viên và một mục INDIVIDUAL cho từng người.
 Thêm/xóa rows để khớp nhóm thật; mẫu ba rows không ép nhóm phải có ba người.
@@ -20,7 +20,7 @@ Thêm/xóa rows để khớp nhóm thật; mẫu ba rows không ép nhóm phải
 | 1 | Nguyễn Hải Long | 2A202602471 | Trưởng nhóm; tích hợp m1–m5, môi trường, tạo 50 answers và hợp nhất các phase | commits 8c796e5, 7dc08e5; artifacts/answers_50q.json |
 | 2 | Ngô Tiến Dũng | 2A202602374 | Phase A: RAGAS Eval (Tasks 1–4) và báo cáo failure clusters | commits 06fe153, 24450de; src/phase_a_ragas.py, artifacts/ragas_50q.json, doc/reports/failure_clusters.md |
 | 3 | Hoàng Anh Minh | 2A202602566 | Phase B: LLM-as-Judge (Tasks 5–8) và báo cáo bias | commit c9b4fd0, src/phase_b_judge.py, artifacts/judge_results.json, doc/reports/bias_report.md |
-| 4 | Hà Anh Tuấn | 2A202602376 | Phase C: Presidio/NeMo guardrails (Tasks 9a–12), thực nghiệm input/output/latency và blueprint | Nhánh phase-c; src/phase_c_guard.py, artifacts/guard_results.json, doc/reports/blueprint.md |
+| 4 | Hà Anh Tuấn | 2A202602376 | Phase C: Presidio/NeMo guardrails (Tasks 9a–12), thực nghiệm input/output/latency và blueprint | commit feb058f; src/phase_c_guard.py, artifacts/guard_results.json, doc/reports/blueprint.md |
 
 Người tích hợp/chạy batch/nộp link: Nguyễn Hải Long tích hợp các nhánh và nộp link GitHub chung; Ngô Tiến Dũng chạy Phase A; Hoàng Anh Minh chạy Phase B; Hà Anh Tuấn phụ trách Phase C với Codex hỗ trợ triển khai, chạy và kiểm chứng.
 
@@ -88,7 +88,7 @@ hoặc pip resolve để khẳng định runtime đã chạy.
 ### HaAnhTuan-2A202602376
 
 - Phần được giao và phần thực tế đã làm: Phụ trách Tasks 9a–12 theo luồng TODO: quét/ẩn PII bằng Presidio; input/output self-check bằng NeMo; chạy attacks/clean controls; đo latency; tổng hợp blueprint từ A/B/C. Bổ sung bộ lọc định danh có cấu trúc để tránh NER tiếng Anh chặn nhầm tiếng Việt và làm rõ prompt input HR/IT trong config.yml. Giữ nguyên imports/helpers; không thêm ngoại lệ theo fixtures.
-- Bằng chứng: nhánh `phase-c`; `src/phase_c_guard.py`, `guardrails/config.yml`, `artifacts/guard_results.json`, `doc/reports/phase_c_report.md` và `doc/reports/blueprint.md`. Commit cá nhân cần bổ sung khi chốt và tích hợp nhánh.
+- Bằng chứng: commit `feb058f` trên nhánh `phase-c`; `src/phase_c_guard.py`, `guardrails/config.yml`, `artifacts/guard_results.json` và `doc/reports/blueprint.md`.
 - Cách kiểm tra: Bộ tests gốc của starter đạt 86 passed, 3 deselected, gồm 12 tests Phase C. Batch `python scripts/run_experiments.py --phase c --live --latency-samples 20` với bộ lọc PII và prompt input hiện tại: 17/20 attacks, 8/8 clean allowed (false-positive rate 0%), 4/4 outputs đúng; 20 timed samples sau 2 warm-up, P95 input guard 833.754435ms, budget_ok=false. Artifact đáp ứng schema/metadata/phép tính và quality gate bắt buộc.
 - Điều đã học: Quyết định guard phải dựa trên rail log, không dựa từ khóa từ chối; NER tiếng Anh gây false positives trên tiếng Việt; cần phân biệt chính sách mật khẩu chung với yêu cầu lấy mật khẩu thật. Latency input layers đo đủ hai tầng khác thời gian request dừng sớm và khác latency toàn hệ thống.
 - Giới hạn/cách xử lý: Presidio kiểm tra định danh có cấu trúc, NeMo xử lý yêu cầu dữ liệu cá nhân và phạm vi chủ đề; chưa bao phủ toàn bộ PII tiếng Việt. Attacks ids 12/14/15 còn lọt; đạt yêu cầu bắt buộc nhưng chưa đạt bonus. Bộ 20/8/4 nhỏ và đã dùng để điều chỉnh, cần holdout trước production. P95 vượt mục tiêu 500ms được ghi đúng và phân tích trong blueprint.
@@ -96,4 +96,4 @@ hoặc pip resolve để khẳng định runtime đã chạy.
 
 ## Cập nhật sau khi nộp
 
-Chưa nộp bản cuối; cập nhật commit chấm và lịch sử sửa sau khi hoàn thành Phase C.
+Đã tích hợp Phase C vào `main`; chưa nộp bản cuối. Xác nhận commit chấm sau khi rà soát bản nộp.
