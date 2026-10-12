@@ -8,7 +8,7 @@ Trưởng nhóm/người nộp: Nguyễn Hải Long (2A202602471)
 
 Ngày lab/deadline áp dụng: 12/10/2026 23:59 — Asia/Ho_Chi_Minh (UTC+07:00)
 
-Commit dùng để chấm: `85e73b1b8b7745408656412400e6461803913752` (bản mã, artifacts và reports đã kiểm tra).
+Commit dùng để chấm: `1564f833ba686d593416fe89d0234bd62b60746e` (bản mã, artifacts và reports đã kiểm tra; commit tiếp theo chỉ cập nhật TEAM.md).
 
 Mỗi nhóm nộp một repo. Điền đủ thành viên và một mục INDIVIDUAL cho từng người.
 Thêm/xóa rows để khớp nhóm thật; mẫu ba rows không ép nhóm phải có ba người.
@@ -94,6 +94,6 @@ hoặc pip resolve để khẳng định runtime đã chạy.
 - Giới hạn/cách xử lý: Presidio kiểm tra định danh có cấu trúc, NeMo xử lý yêu cầu dữ liệu cá nhân và phạm vi chủ đề; chưa bao phủ toàn bộ PII tiếng Việt. Ba ca ngoài phạm vi từng lọt trong batch ban đầu đã bị chặn sau khi chỉnh prompt; batch mới đạt điều kiện bonus, nhưng bộ 20/8/4 nhỏ và đã dùng để điều chỉnh, cần holdout trước production. P95 vượt mục tiêu 500ms được ghi đúng và phân tích trong blueprint.
 - Nguồn/AI hỗ trợ nếu có: Dùng Codex hỗ trợ hoàn thiện code theo starter, phân tích false positives, điều chỉnh bộ lọc PII và prompt input trong config.yml, chạy pytest/batch thật và soạn báo cáo từ JSON. Tests, fixtures và requirements giữ nguyên bản gốc. Các số liệu live lấy từ artifact thực nghiệm, không dùng mock làm kết quả nộp bài.
 
-## Cập nhật sau khi nộp
+## Bản chốt để nộp
 
-Đã tích hợp Phase C vào `main`; chưa nộp bản cuối. Nếu sửa mã, artifacts hoặc reports trước khi nộp, cập nhật commit dùng để chấm theo bản mới.
+Đã tích hợp Phase A, B và C vào `main`. Bản mã, bốn artifacts và ba reports đã kiểm tra tại commit `1564f833ba686d593416fe89d0234bd62b60746e`: 86 test offline pass, `scripts/check_lab.py` báo 0 lỗi. Commit cập nhật mục này chỉ chỉnh tài liệu TEAM, không thay đổi bản mã hoặc bằng chứng đã chốt. Trưởng nhóm gửi link repo và SHA qua kênh coach công bố. Nếu sửa mã, artifacts hoặc reports trước khi gửi, cần kiểm tra và chốt SHA mới.
